@@ -3,8 +3,8 @@ import { NavMain } from '@/components/nav-main';
 import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, ScrollText, HandCoins, House, FileChartColumn, Settings, Info, UserPen } from 'lucide-react';
+import { Link, usePage } from '@inertiajs/react';
+import { BookOpen, Folder, LayoutGrid, ScrollText, DollarSign, HandCoins, House, FileChartColumn, Settings, Info, UserPen } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -12,6 +12,30 @@ const mainNavItems: NavItem[] = [
         title: 'Dashboard',
         url: '/dashboard',
         icon: LayoutGrid,
+    },
+    {
+        title: "Data",
+        url: "#",
+        icon: Info,
+        items: [
+          {
+            title: "BAST",
+            url: "/data/bast",
+          },
+          {
+            title: "Customers",
+            url: "/data/customer",
+          },
+          {
+            title: "Units",
+            url: "/data/units",
+          },
+        ],
+    },
+    {
+        title: 'Billing',
+        url: '/billing',
+        icon: DollarSign,
     },
     {
         title: 'Invoices',
@@ -34,14 +58,27 @@ const mainNavItems: NavItem[] = [
         icon: FileChartColumn,
     },
     {
-        title: 'Settings',
-        url: '/ipl',
+        title: "Settings",
+        url: "#",
         icon: Settings,
-    },
-    {
-        title: 'Data',
-        url: '/ipl',
-        icon: Info,
+        items: [
+          {
+            title: "Rate IPL",
+            url: "/setting/rate-ipl",
+          },
+          {
+            title: "Promo IPL",
+            url: "/setting/promo-ipl",
+          },
+          {
+            title: "Rate Internet",
+            url: "/setting/rate-internet",
+          },
+          {
+            title: "Promo Internet",
+            url: "/setting/promo-internet",
+          },
+        ],
     },
     {
         title: 'Profile',
@@ -52,7 +89,7 @@ const mainNavItems: NavItem[] = [
 
 const footerNavItems: NavItem[] = [
     {
-        title: 'Repository',
+        title: 'CHL Property',
         url: 'https://github.com/laravel/react-starter-kit',
         icon: Folder,
     },
@@ -63,9 +100,29 @@ const footerNavItems: NavItem[] = [
     },
 ];
 
-export function AppSidebar() {
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+    const { url } = usePage();
+    const isDataActive = url.startsWith('/data');
+    const isSettingActive = url.startsWith('/setting');
+
+    const navItems = mainNavItems.map(item => {
+        if (item.title === 'Data') {
+            return {
+                ...item,
+                isActive: isDataActive
+            };
+        }
+        if (item.title === 'Settings') {
+            return {
+                ...item,
+                isActive: isSettingActive
+            };
+        }
+        return item;
+    });
+
     return (
-        <Sidebar collapsible="icon" variant="inset">
+        <Sidebar collapsible="icon" {...props}>
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
@@ -78,8 +135,8 @@ export function AppSidebar() {
                 </SidebarMenu>
             </SidebarHeader>
 
-            <SidebarContent>
-                <NavMain items={mainNavItems} />
+            <SidebarContent className="scrollbar-none">
+                <NavMain items={navItems} />
             </SidebarContent>
 
             <SidebarFooter>
