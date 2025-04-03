@@ -23,6 +23,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
+import * as Toast from '@radix-ui/react-toast';
 import { formatRupiah } from '@/lib/utils';
 import { useForm } from "@inertiajs/react";
 
@@ -85,7 +86,8 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 export default function BastPage({ basts, iplRates, internetRates }: Props) {
     const [openDialogs, setOpenDialogs] = useState<{ [key: string]: boolean }>({});
-    const { data, setData, post, processing } = useForm<BillForm>({
+    const [open, setOpen] = useState(false);
+    const { data, setData, post, processing, errors } = useForm<BillForm>({
         NoCustomer: '',
         NoST: '',
         nominal_ipl: '',
@@ -96,7 +98,7 @@ export default function BastPage({ basts, iplRates, internetRates }: Props) {
         periode_ipl_end: '',
         periode_internet_start: '',
         periode_internet_end: '',
-        status: 'Unpaid',
+        status: 'Active',
     });
 
     const calculateIplAmount = (luasTanah: number, rateId: string) => {
@@ -128,11 +130,21 @@ export default function BastPage({ basts, iplRates, internetRates }: Props) {
         });
     };
 
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         post('/create/bill', {
             onSuccess: () => {
-                setOpenDialogs({});
+                // Close the specific dialog first
+                setOpenDialogs(prev => ({
+                    ...prev,
+                    [data.NoST]: false
+                }));
+                // Then show the toast
+                setOpen(true);
+            },
+            onError: (errors) => {
+                console.error('Submission errors:', errors);
             },
         });
     };
@@ -175,7 +187,7 @@ export default function BastPage({ basts, iplRates, internetRates }: Props) {
                                                         setData({
                                                             ...data,
                                                             NoST: bast.NoST,
-                                                            NoCustomer: bast.NoCustomer,
+                                                            NoCustomer: String(bast.NoCustomer),
                                                             ipl_rate_id: '',
                                                             nominal_ipl: ''
                                                         });
@@ -200,6 +212,13 @@ export default function BastPage({ basts, iplRates, internetRates }: Props) {
                                                         </DialogDescription>
                                                     </DialogHeader>
                                                     <form onSubmit={handleSubmit} className="space-y-4">
+                                                        {Object.keys(errors).length > 0 && (
+                                                            <div className="bg-red-50 text-red-600 p-3 rounded">
+                                                                {Object.entries(errors).map(([key, error]) => (
+                                                                    <p key={key}>{error}</p>
+                                                                ))}
+                                                            </div>
+                                                        )}
                                                         <div className="grid grid-cols-2 gap-4">
                                                             <div className="space-y-2">
                                                                 <Label htmlFor="NoST">BAST Number</Label>
@@ -337,6 +356,22 @@ export default function BastPage({ basts, iplRates, internetRates }: Props) {
                     </CardContent>
                 </Card>
             </div>
+            <Toast.Provider swipeDirection="right">
+                <Toast.Root
+                    className="bg-green-100 rounded-md shadow-md p-4 flex items-center gap-2"
+                    open={open}
+                    onOpenChange={setOpen}
+                    duration={5000}
+                >
+                    <Toast.Title className="text-green-800 font-medium">
+                        Success
+                    </Toast.Title>
+                    <Toast.Description className="text-green-700">
+                        Bill has been created successfully
+                    </Toast.Description>
+                </Toast.Root>
+                <Toast.Viewport className="fixed bottom-4 right-4 flex flex-col gap-2 w-96 max-w-[100vw] m-0 list-none z-50" />
+            </Toast.Provider>
         </AppLayout>
     );
 }

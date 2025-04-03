@@ -49,8 +49,38 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Estate Management',
-        url: '/ipl',
+        url: '#',
         icon: House,
+        items: [
+            {
+                title: 'Internet Services',
+                url: '/estate/internet',
+            },
+            {
+                title: 'Customer Service',
+                url: '/estate/customer-service',
+            },
+            {
+                title: 'Facilities',
+                url: '/estate/facilities',
+            },
+            {
+                title: 'Renovation',
+                url: '/estate/renovation',
+            },
+            {
+                title: 'Visitors',
+                url: '/estate/visitors',
+            },
+            {
+                title: 'Community Events',
+                url: '/estate/events',
+            },
+            {
+                title: 'Maintenance',
+                url: '/estate/maintenance',
+            },
+        ],
     },
     {
         title: 'Reports',
@@ -89,12 +119,12 @@ const mainNavItems: NavItem[] = [
 
 const footerNavItems: NavItem[] = [
     {
-        title: 'CHL Property',
-        url: 'https://github.com/laravel/react-starter-kit',
+        title: 'Cipta Harmoni Lestari',
+        url: 'https://www.ciptaharmoni.com/',
         icon: Folder,
     },
     {
-        title: 'Documentation',
+        title: '',
         url: 'https://laravel.com/docs/starter-kits',
         icon: BookOpen,
     },
@@ -104,6 +134,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const { url } = usePage();
     const isDataActive = url.startsWith('/data');
     const isSettingActive = url.startsWith('/setting');
+    const isEstateActive = url.startsWith('/estate');
 
     const navItems = mainNavItems.map(item => {
         if (item.title === 'Data') {
@@ -116,6 +147,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             return {
                 ...item,
                 isActive: isSettingActive
+            };
+        }
+        if (item.title === 'Estate Management') {
+            return {
+                ...item,
+                isActive: isEstateActive
             };
         }
         return item;
