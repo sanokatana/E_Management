@@ -66,7 +66,7 @@ export default function IplRatePage({ rates }: Props) {
                             <DialogTrigger asChild>
                                 <Button>Add New Rate</Button>
                             </DialogTrigger>
-                            <DialogContent>
+                            <DialogContent className="max-w-md">
                                 <DialogHeader>
                                     <DialogTitle>Add New IPL Rate</DialogTitle>
                                 </DialogHeader>

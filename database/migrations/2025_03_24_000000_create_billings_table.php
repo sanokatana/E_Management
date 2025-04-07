@@ -132,6 +132,28 @@ return new class extends Migration
             $table->index('send_date');
             $table->index('id_customer');
         });
+
+        Schema::create('tb_ipl', function (Blueprint $table) {
+            $table->id();
+            $table->string('NoCustomer');
+            $table->string('NoST');
+            $table->decimal('nominal_ipl', 15, 2);
+            $table->decimal('nominal_internet', 15, 2)->nullable();
+            $table->unsignedBigInteger('ipl_rate_id');
+            $table->unsignedBigInteger('internet_id')->nullable();
+            $table->date('periode_ipl_start');
+            $table->date('periode_ipl_end');
+            $table->date('periode_internet_start')->nullable();
+            $table->date('periode_internet_end')->nullable();
+            $table->string('status')->default('Unpaid');
+            $table->unsignedBigInteger('updated_by');
+            $table->timestamps();
+
+            // Foreign key constraints
+            $table->foreign('ipl_rate_id')->references('id')->on('tb_iplrate');
+            $table->foreign('internet_id')->references('id')->on('tb_internetrate');
+            $table->foreign('updated_by')->references('id')->on('users');
+        });
     }
 
     /**
@@ -140,6 +162,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('tb_invoice');
+        Schema::dropIfExists('tb_ipl');
         Schema::dropIfExists('billings');
         Schema::dropIfExists('tb_promointernet');
         Schema::dropIfExists('tb_promoipl');
